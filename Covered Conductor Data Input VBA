@@ -1,0 +1,210 @@
+Sub Button1_Click()
+    Call GetNextEntry
+    
+End Sub
+Sub GetNextEntry()
+On Error GoTo SubError
+    Const DbLoc As String = "C:\Users\achan\Desktop\GT\NEETRAC\CoveredConductorQA.accdb"
+    Dim db As DAO.Database
+    Dim rs As DAO.Recordset
+    Dim xlBook As Workbook
+    Dim xlSheet As Worksheet
+    Dim recCount As Long
+    Dim SQL As String
+    
+    'setup references to workbook and sheet
+    Set xlBook = ActiveWorkbook
+    Set xlSheet = xlBook.Worksheets(1)
+    'xlSheet.Range("A5:DA100").ClearContents
+    
+    'communicate with the user
+    Application.StatusBar = "Connecting to the external database..."
+    Application.Cursor = xlWait
+    Set db = OpenDatabase(DbLoc)
+    SQL = "SELECT TOP 1 entry FROM CoveredConductor order by entry DESC"
+    
+    'execute query and populate recordset
+    Set rs = db.OpenRecordset(SQL, dbOpenSnapshot)
+    
+    'copy recordset to spreadsheet
+    Application.StatusBar = "Writing to spreadsheet..."
+    If rs.RecordCount = 0 Then
+        MsgBox "No data retrieved from database", vbInformation + vbOKOnly, "No Data"
+        GoTo SubExit
+    Else
+        rs.MoveLast
+        recCount = rs.RecordCount
+        rs.MoveFirst
+    End If
+    xlSheet.Range("A2").CopyFromRecordset rs
+    xlSheet.Range("A2").Value = xlSheet.Range("A2").Value + 1
+    Application.StatusBar = "Update complete"
+    
+    'exit subroutine
+SubExit:
+On Error Resume Next
+    Application.Cursor = xlDefault
+    rs.Close
+    Set rs = Nothing
+    Set xlSheet = Nothing
+    Set xlBook = Nothing
+    Exit Sub
+    
+    'error message
+SubError:
+    Application.StatusBar = ""
+    MsgBox "Refresh Data - UpdateData VBA error: " & vbCrLf & Err.Number & " = " & Err.Description
+    Resume SubExit
+End Sub
+Sub Button2_Click()
+    Range("A2:DC1108").ClearContents
+End Sub
+Sub Button3_Click()
+    Call ADOFromExcelToAccess
+End Sub
+Sub ADOFromExcelToAccess()
+Dim oSelect As Range
+Dim i As Long
+Dim j As Integer
+Dim sPath As String
+Worksheets("DataEntry").Activate
+Set oSelect = Application.InputBox("Range", , Range("A1").CurrentRegion.Address, , , , , 8)
+Dim oDAO As DAO.DBEngine
+Dim oDB As Database
+Dim oRS As Recordset
+ChDir ActiveWorkbook.Path
+sPath = Application.GetOpenFilename("Access,*.accdb")
+If sPath = "False" Then
+    Exit Sub
+End If
+Set oDAO = New DAO.DBEngine
+Set oDB = oDAO.OpenDatabase(sPath)
+Set oRS = oDB.OpenRecordset("CoveredConductor")
+For i = 2 To oSelect.Rows.Count
+    oRS.AddNew
+    For j = 1 To oSelect.Columns.Count
+        oRS.Fields(j) = oSelect.Cells(i, j)
+    Next j
+    oRS.Update
+Next i
+oDB.Close
+If MsgBox("Open the table?", vbYesNo) = vbYes Then
+    Dim oApp As Access.Application
+    Set oApp = New Access.Application
+    oApp.Visible = True
+    oApp.OpenCurrentDatabase sPath
+    oApp.DoCmd.OpenTable "CoveredConductor", acViewNormal
+    oApp.DoCmd.GoToRecord , , acLast
+    DoEvents
+End If
+
+End Sub
+
+
+Sub AutoReport()
+
+Dim wbDat As Workbook
+Set wbDat = ThisWorkbook
+Dim wsDat As Worksheet
+Set wsDat = wbDat.Worksheets("DataEntry")
+
+Dim order As Range
+Set order = Selection
+Dim c As Range
+
+Dim wbNew As Workbook
+Set wbNew = Workbooks.Add
+Dim wsNew As Worksheet
+Set wsNew = wbNew.Worksheets(1)
+
+Dim pNumb As String
+Dim tNumb As String
+Dim oNumb As String
+Dim fPath As String
+
+' Save changes to the data workbook.
+
+wbDat.Save
+
+' Get project, task, and order numbers.
+
+pNumb = wsDat.Range("B" & order.Row).Value
+tNumb = wsDat.Range("D" & order.Row).Value
+oNumb = pNumb & "-" & tNumb
+
+' Name the newly created sheet using the order number.
+
+wsNew.Name = oNumb
+
+' For each non-white cell in the order, apply the fill color displayed so that conditional formatting rules can then be removed without losing the color.
+
+For Each c In order
+    If Not c.DisplayFormat.Interior.Color = 16777215 Then
+        c.Interior.Color = c.DisplayFormat.Interior.Color
+    End If
+Next
+
+' Remove conditional formatting from all cells in the order.
+
+order.FormatConditions.Delete
+
+' Copy the order to the new workbook.
+
+order.Copy
+
+With wsNew.Range("A3")
+    .PasteSpecial xlPasteColumnWidths
+    .PasteSpecial xlPasteAll
+End With
+
+wsDat.Rows("1:2").EntireRow.Copy wsNew.Range("A1")
+
+' Hide unwanted columns in the new workbook.
+
+wsNew.Range("A:A, C:C, AV:AZ, BE:BG, BK:BS, BV:BX, CA:CI, CL:CN").EntireColumn.Hidden = True
+
+' Save the newly created report workbook in the appropriate project folder, if the order number is valid and the file doesn't already exist.
+
+If Not tNumb = "" Then
+       
+    If pNumb = "21-066" Then
+    
+        fPath = "P:\2021\21-066 Q SCE IBII CC QA\Deliverables\" & oNumb & " Report.xlsx"
+
+    Else
+        
+        MsgBox "The project number is not recognized.", vbCritical, "This report was not automatically saved."
+        
+        GoTo SkipSave
+       
+    End If
+    
+Else
+
+    MsgBox "The overall task number is missing.", vbCritical, "This report was not automatically saved."
+    
+    GoTo SkipSave
+
+End If
+    
+If Dir(fPath) = "" Then
+
+    wbNew.SaveAs Filename:=fPath, FileFormat:=xlOpenXMLWorkbook
+    
+Else
+
+    MsgBox "A file with this name already exists.", vbInformation, "This report was not automatically saved."
+
+End If
+
+SkipSave:
+
+' Close the data workbook without saving changes.
+
+wbDat.Close savechanges:=False
+
+End Sub
+Sub Button4_Click()
+    Call AutoReport
+End Sub
+
