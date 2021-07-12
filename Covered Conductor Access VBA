@@ -1,0 +1,178 @@
+Option Compare Database
+Option Explicit
+
+Private Sub Form_Load()
+    Dim sqlstring As String
+    sqlstring = "select [Project #] from [Covered Conductor] group by [Project #]"
+    Me!projectID_cmb.RowSource = sqlstring
+
+End Sub
+
+
+Private Sub projectID_cmb_Exit(Cancel As Integer)
+    Dim sqlstring1 As String
+    sqlstring1 = "select [Overall Task] from [Covered Conductor] where [Project #] = '" & projectID_cmb.Value & "' group by [Overall Task];"
+    Me!overallTask_cmb.RowSource = sqlstring1
+End Sub
+
+
+
+Private Sub recordPull_Click()
+    DoCmd.OpenQuery "Report Pull Query"
+    Form.Refresh
+End Sub
+
+Private Sub cableDesc_AfterUpdate()
+    Select Case cableDesc & Customer
+    Case "1/0 ACSR XLHDPE 75mil" & "Southern California Edison"
+        Conductor_OD_Min_Limit.Value = 390
+        Conductor_OD_Max_Limit.Value = 406
+        Covering_Thickness_Min_Limit.Value = 135
+        Tracking_Layer_Elongation_UMS_Limit.Value = 115
+        Tracking_Layer_Elongation_DNMS_Limit.Value = 175
+        XLPE_Layer_Elongation_UMS_Limit.Value = 85
+        XLPE_Layer_Elongation_DNMS_Limit.Value = 175
+    Case "1/0 ACSR 15/175/125 XLPE 35kV" & "Southern California Edison"
+        Conductor_OD_Min_Limit.Value = 390
+        Conductor_OD_Max_Limit.Value = 406
+        Overall_OD_Max_Limit.Value = 1048
+        Conductor_Shield_Thickness_Min_Limit.Value = 12
+        Covering_Thickness_Min_Limit.Value = 270
+        Tracking_Layer_Elongation_UMS_Limit.Value = 115
+        Tracking_Layer_Elongation_DNMS_Limit.Value = 175
+        XLPE_Layer_Elongation_UMS_Limit.Value = 85
+        XLPE_Layer_Elongation_DNMS_Limit.Value = 175
+    Case "1/0 ACSR 15/75/75 XLPE 15 kV" & "Southern California Edison"
+        Conductor_OD_Min_Limit = 390
+        Conductor_OD_Max_Limit.Value = 406
+        Overall_OD_Max_Limit.Value = 748
+        Conductor_Shield_Thickness_Min_Limit.Value = 12
+        Covering_Thickness_Min_Limit.Value = 135
+        Tracking_Layer_Elongation_UMS_Limit.Value = 115
+        Tracking_Layer_Elongation_DNMS_Limit.Value = 175
+        XLPE_Layer_Elongation_UMS_Limit.Value = 85
+        XLPE_Layer_Elongation_DNMS_Limit.Value = 175
+    Case "1/0 ACSR 15/75/75 XLPE 15kV" & "Southern California Edison"
+        Conductor_OD_Min_Limit = 390
+        Conductor_OD_Max_Limit.Value = 406
+        Overall_OD_Max_Limit.Value = 748
+        Conductor_Shield_Thickness_Min_Limit.Value = 12
+        Covering_Thickness_Min_Limit.Value = 135
+        Tracking_Layer_Elongation_UMS_Limit.Value = 115
+        Tracking_Layer_Elongation_DNMS_Limit.Value = 175
+        XLPE_Layer_Elongation_UMS_Limit.Value = 85
+        XLPE_Layer_Elongation_DNMS_Limit.Value = 175
+    Case "2 AWG HDCU 15/75/75 XLPE 15kV" & "Southern California Edison"
+        Conductor_OD_Min_Limit = 286
+        Conductor_OD_Max_Limit.Value = 298
+        Overall_OD_Max_Limit.Value = 662
+        Conductor_Shield_Thickness_Min_Limit.Value = 12
+        Covering_Thickness_Min_Limit.Value = 135
+        Tracking_Layer_Elongation_UMS_Limit.Value = 115
+        Tracking_Layer_Elongation_DNMS_Limit.Value = 175
+        XLPE_Layer_Elongation_UMS_Limit.Value = 85
+        XLPE_Layer_Elongation_DNMS_Limit.Value = 175
+    Case "2/0 AWG HDCU 15/75/75 XLPE 15kV" & "Southern California Edison"
+        Conductor_OD_Min_Limit = 406
+        Conductor_OD_Max_Limit.Value = 422
+        Overall_OD_Max_Limit.Value = 764
+        Conductor_Shield_Thickness_Min_Limit.Value = 12
+        Covering_Thickness_Min_Limit.Value = 135
+        Tracking_Layer_Elongation_UMS_Limit.Value = 115
+        Tracking_Layer_Elongation_DNMS_Limit.Value = 175
+        XLPE_Layer_Elongation_UMS_Limit.Value = 85
+        XLPE_Layer_Elongation_DNMS_Limit.Value = 175
+    Case "336.4 kcmil 18/1 ACSR 15/175/125 XLPE 35kV" & "Southern California Edison"
+        Conductor_OD_Min_Limit = 670
+        Conductor_OD_Max_Limit.Value = 698
+        Overall_OD_Max_Limit.Value = 1344
+        Conductor_Shield_Thickness_Min_Limit.Value = 15
+        Covering_Thickness_Min_Limit.Value = 270
+        Tracking_Layer_Elongation_UMS_Limit.Value = 115
+        Tracking_Layer_Elongation_DNMS_Limit.Value = 175
+        XLPE_Layer_Elongation_UMS_Limit.Value = 85
+        XLPE_Layer_Elongation_DNMS_Limit.Value = 175
+    Case "336.4 kcmil 30/7 ACSR 15/175/125 XLPE 35kV" & "Southern California Edison"
+        Conductor_OD_Min_Limit = 726
+        Conductor_OD_Max_Limit.Value = 756
+        Overall_OD_Max_Limit.Value = 1401
+        Conductor_Shield_Thickness_Min_Limit.Value = 15
+        Covering_Thickness_Min_Limit.Value = 270
+        Tracking_Layer_Elongation_UMS_Limit.Value = 115
+        Tracking_Layer_Elongation_DNMS_Limit.Value = 175
+        XLPE_Layer_Elongation_UMS_Limit.Value = 85
+        XLPE_Layer_Elongation_DNMS_Limit.Value = 175
+    Case "336.4 kcmil 30/7 ACSR 15/75/75 XLPE 15kV" & "Southern California Edison"
+        Conductor_OD_Min_Limit = 719
+        Conductor_OD_Max_Limit.Value = 763
+        Overall_OD_Max_Limit.Value = 1124
+        Conductor_Shield_Thickness_Min_Limit.Value = 12
+        Covering_Thickness_Min_Limit.Value = 135
+        Tracking_Layer_Elongation_UMS_Limit.Value = 115
+        Tracking_Layer_Elongation_DNMS_Limit.Value = 175
+        XLPE_Layer_Elongation_UMS_Limit.Value = 85
+        XLPE_Layer_Elongation_DNMS_Limit.Value = 175
+    Case "4/0 HDCU 15/75/75 XLPE 15kV" & "Southern California Edison"
+        Conductor_OD_Min_Limit = 719
+        Conductor_OD_Max_Limit.Value = 763
+        Overall_OD_Max_Limit.Value = 1124
+        Conductor_Shield_Thickness_Min_Limit.Value = 12
+        Covering_Thickness_Min_Limit.Value = 135
+        Tracking_Layer_Elongation_UMS_Limit.Value = 115
+        Tracking_Layer_Elongation_DNMS_Limit.Value = 175
+        XLPE_Layer_Elongation_UMS_Limit.Value = 85
+        XLPE_Layer_Elongation_DNMS_Limit.Value = 175
+    Case "653.9 kcmil, 18/3 ACSR 20/175/125 XLPE 35kV" & "Southern California Edison"
+        Conductor_OD_Min_Limit = 934
+        Conductor_OD_Max_Limit.Value = 972
+        Overall_OD_Max_Limit.Value = 1623
+        Conductor_Shield_Thickness_Min_Limit.Value = 16
+        Covering_Thickness_Min_Limit.Value = 270
+        Tracking_Layer_Elongation_UMS_Limit.Value = 115
+        Tracking_Layer_Elongation_DNMS_Limit.Value = 175
+        XLPE_Layer_Elongation_UMS_Limit.Value = 85
+        XLPE_Layer_Elongation_DNMS_Limit.Value = 175
+    Case "653.9 kcmil, 18/3 ACSR 20/80/80 XLPE 15kV" & "Southern California Edison"
+        Conductor_OD_Min_Limit = 934
+        Conductor_OD_Max_Limit.Value = 972
+        Overall_OD_Max_Limit.Value = 1343
+        Conductor_Shield_Thickness_Min_Limit.Value = 16
+        Covering_Thickness_Min_Limit.Value = 144
+        Tracking_Layer_Elongation_UMS_Limit.Value = 115
+        Tracking_Layer_Elongation_DNMS_Limit.Value = 175
+        XLPE_Layer_Elongation_UMS_Limit.Value = 85
+        XLPE_Layer_Elongation_DNMS_Limit.Value = 175
+    Case "1/0 ACSR 15/75/75 XLPE 15 kV" & "Pacific Gas & Electric"
+        Conductor_OD_Min_Limit = 390
+        Conductor_OD_Max_Limit.Value = 406
+        Overall_OD_Min_Limit.Value = 738
+        Overall_OD_Max_Limit.Value = 768
+        Conductor_Shield_Thickness_Min_Limit.Value = 15
+        Covering_Thickness_Min_Limit.Value = 144
+        XLPE_Thickness_Min_Limit.Value = 68
+        Tracking_Thickness_Min_Limit.Value = 68
+        XLPE___Tracking_Min_Limit.Value = 135
+        Tracking_Layer_Elongation_UMS_Limit.Value = 115
+        Tracking_Layer_Elongation_DNMS_Limit.Value = 175
+        XLPE_Layer_Elongation_UMS_Limit.Value = 85
+        XLPE_Layer_Elongation_DNMS_Limit.Value = 175
+    Case "1/0 ACSR 15/75/75 XLPE 15 kV" & "San Diego Gas & Electric"
+        Conductor_OD_Min_Limit = 390
+        Conductor_OD_Max_Limit.Value = 406
+        Overall_OD_Max_Limit.Value = 748
+        Conductor_Shield_Thickness_Min_Limit.Value = 12
+        Covering_Thickness_Min_Limit.Value = 135
+        Tracking_Layer_Elongation_UMS_Limit.Value = 115
+        Tracking_Layer_Elongation_DNMS_Limit.Value = 175
+        XLPE_Layer_Elongation_UMS_Limit.Value = 85
+        XLPE_Layer_Elongation_DNMS_Limit.Value = 175
+    End Select
+End Sub
+
+
+Private Sub XLPE___Tracking_Min_AfterUpdate()
+    If XLPE___Tracking_Min.Value > XLPE___Tracking_Min_Limit.Value Then
+        Me.XLPE___Tracking_Min.BackColor = RGB(0, 255, 0)
+    End If
+
+End Sub
