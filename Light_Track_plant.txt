@@ -1,0 +1,186 @@
+#include <Servo.h>
+
+// Create a new servo object:
+Servo altServo;
+Servo azServo;
+// Define the servo pin:
+#define altServoPin 10
+#define azServoPin 11
+// Create a variable to store the servo position:
+int altAngle = 0;
+int azAngle = 0;
+int calibration = 0;
+
+int n[13][15];
+int* val[195];
+int specCalib[7];
+
+int i = 0;
+int j = 0;
+int k = 0;
+
+int z = 0;
+int counter = 0;
+
+void setup() {
+  // put your setup code here, to run once:
+  pinMode(A0, INPUT); // Subject to change
+  pinMode(A1, INPUT);
+  pinMode(A2, INPUT);
+  pinMode(A3, INPUT);
+  pinMode(A4, INPUT);
+  pinMode(A5, INPUT);
+  pinMode(A6, INPUT);
+  
+  Serial.begin(9600);
+
+  altServo.attach(altServoPin);
+  altServo.write(0);
+  azServo.attach(azServoPin);
+  azServo.write(0);
+
+  for (int a = 0; a < 7; a++) {
+    for (int b = 0; b < 11; b++) {
+      n[a][b] = counter;
+      counter++;
+    }
+  }
+
+  while (azAngle <= 120) {
+    for (altAngle = 0; altAngle <= 90; altAngle += 5) {
+      altServo.write(altAngle);
+      delay(500);
+      int readings[7] = {analogRead(A0),analogRead(A1),analogRead(A2),analogRead(A3),analogRead(A4),analogRead(A5),analogRead(A6)};
+      val[z] = readings;
+      z++;
+      //Serial.println(altAngle);
+      delay(50);
+    }
+    azAngle += 10;
+    azServo.write(azAngle);
+    delay(500);
+    j++;
+  }
+  altServo.write(45);
+  altAngle = 45;
+  delay(500);
+  azServo.write(60);
+  azAngle = 60;
+  delay(500);
+  Serial.println("Calibration Completed");
+}
+
+void loop() {
+  // put your main code here, to run repeatedly:
+
+  int north = analogRead(A0);
+  int ne = analogRead(A2);
+  int se = analogRead(A3);
+  int sw = analogRead(A1);
+  int nw = analogRead(A4);
+  int south = analogRead(A5);
+  int head = analogRead(A6);
+
+  int altChange = 5;
+
+  if (altAngle % altChange < 2.5) {
+    i = altAngle / altChange;
+  } else {
+    i = (altAngle + altChange) / altChange;
+  }
+
+  int azChange = 10;
+  
+  if (azAngle % azChange < 5) {
+    j = azAngle / azChange;
+  } else {
+    j = (azAngle + azChange) / azChange;
+  }
+
+  int ind = n[i][j];
+  for (int k = 0; k < 7; k++) {
+        specCalib[k] = val[ind][k];
+  }
+
+  int northd = north - specCalib[0];
+  int southd = south - specCalib[5];
+  int nwd = nw - specCalib[4];
+  int ned = ne - specCalib[2];
+  int swd = sw - specCalib[1];
+  int sed = se - specCalib[3];
+  int headd = head - specCalib[6];
+  Serial.println(northd);
+  Serial.println(ned);
+  Serial.println(sed);
+  Serial.println(swd);
+  Serial.println(nwd);
+  Serial.println(southd);
+  Serial.println(headd);
+  
+  int maximum = (max(max(max(max(max(northd,southd),nwd),ned),swd),sed));
+  //Serial.println(maximum);
+
+//  if (!(headd > maximum + 100)) {
+     if (northd > southd + 100 && northd > maximum - 10 && northd < maximum + 10) {
+       if (altAngle > 0) {
+         altAngle = altAngle - 2;
+       }
+     } else if (southd > northd + 100 && southd > maximum - 10 && southd < maximum + 10) {
+       if (altAngle < 90) {
+         altAngle = altAngle + 2;
+       }
+     }
+     if (nwd > sed + 100 && nwd > maximum - 5 && nwd < maximum + 10) {
+       if (altAngle > 0) {
+         altAngle = altAngle - 2;
+       }
+       if (azAngle > 0) {
+         azAngle = azAngle - 2;
+       }
+     } else if (sed > nwd + 100 && sed > maximum - 5 && sed < maximum + 10) {
+       if (altAngle < 90) {
+         altAngle = altAngle + 2;
+       }
+       if (azAngle < 120) {
+         azAngle = azAngle + 2;
+       }
+     }
+     if (ned > swd + 100 && ned > maximum - 5 && ned < maximum + 10) {
+       if (altAngle > 0) {
+         altAngle = altAngle - 2;
+       }
+       if (azAngle < 120) {
+         azAngle = azAngle + 2;
+       }
+     } else if (swd > ned + 100 && swd > maximum - 5 && swd < maximum + 10) {
+       if (altAngle < 90) {
+         altAngle = altAngle +  2;
+       }
+       if (azAngle > 0) {
+         azAngle = azAngle - 2;
+       }
+     }
+
+     if (nwd - swd < 50 && swd - nwd > -50) {
+       
+     }
+
+//    if (nwd - swd < 50 && swd - nwd > -50 && nwd > 500 && swd > 500) {
+//       if ((nwd > maximum - 50) && (swd > maximum - 50)) {
+//          if (azAngle > 0) {
+//            azAngle = azAngle - 2;
+//          }
+//       }
+//    }
+//    if (ned - sed < 50 && sed - ned > -50 && ned > 100 && sed > 100) {
+//       if ((ned > maximum - 50) && (sed > maximum - 50)) {
+//          if (azAngle < 120) {
+//            azAngle = azAngle + 2;
+//          }
+//       }
+//    }
+//  }
+ 
+  altServo.write(altAngle);
+  azServo.write(azAngle);
+}
