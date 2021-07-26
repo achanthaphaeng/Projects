@@ -60,45 +60,184 @@ Sub Button2_Click()
     Range("A2:DC1108").ClearContents
 End Sub
 Sub Button3_Click()
-    Call ADOFromExcelToAccess
+    Call TransData
+    MsgBox "Export Successful!"
 End Sub
-Sub ADOFromExcelToAccess()
-Dim oSelect As Range
-Dim i As Long
-Dim j As Integer
-Dim sPath As String
-Worksheets("DataEntry").Activate
-Set oSelect = Application.InputBox("Range", , Range("A1").CurrentRegion.Address, , , , , 8)
-Dim oDAO As DAO.DBEngine
-Dim oDB As Database
-Dim oRS As Recordset
-ChDir ActiveWorkbook.Path
-sPath = Application.GetOpenFilename("Access,*.accdb")
-If sPath = "False" Then
-    Exit Sub
-End If
-Set oDAO = New DAO.DBEngine
-Set oDB = oDAO.OpenDatabase(sPath)
-Set oRS = oDB.OpenRecordset("CoveredConductor")
-For i = 2 To oSelect.Rows.Count
-    oRS.AddNew
-    For j = 1 To oSelect.Columns.Count
-        oRS.Fields(j) = oSelect.Cells(i, j)
-    Next j
-    oRS.Update
+
+Public Sub TransData()
+Dim rcount As Integer
+Dim rs As DAO.Recordset
+Set rs = CurrentDb.OpenRecordset("CoveredConductor", dbOpenDynaset)
+Application.ActiveSheet.UsedRange
+rcount = Worksheets("DataEntry").UsedRange.Rows.Count
+Application.ScreenUpdating = False
+Application.EnableAnimations = False
+Application.EnableEvents = False
+Application.DisplayAlerts = False
+
+ActiveWorkbook.Worksheets("DataEntry").Activate
+
+Call MakeConnection("CoveredConductor")
+
+For i = 1 To rcount - 1
+    rs.AddNew
+    rs.Fields("Entry") = Cells(i + 1, 1).Value
+    rs.Fields("Project #") = Cells(i + 1, 2).Value
+    rs.Fields("Bundle ID #") = Cells(i + 1, 3).Value
+    rs.Fields("Overall Task") = Cells(i + 1, 4).Value
+    rs.Fields("Task") = Cells(i + 1, 5).Value
+    rs.Fields("Sample ID #") = Cells(i + 1, 6).Value
+    rs.Fields("Results Pass/DNMS/UMS") = Cells(i + 1, 7).Value
+    rs.Fields("Failing Condition") = Cells(i + 1, 8).Value
+    rs.Fields("Unusual Condition") = Cells(i + 1, 9).Value
+    rs.Fields("Date Received") = Cells(i + 1, 10).Value
+    rs.Fields("Testing Completed") = Cells(i + 1, 11).Value
+    rs.Fields("Customer") = Cells(i + 1, 12).Value
+    rs.Fields("Manufacturer") = Cells(i + 1, 13).Value
+    rs.Fields("CTR/WO/SO") = Cells(i + 1, 14).Value
+    rs.Fields("Date of Manufacture") = Cells(i + 1, 15).Value
+    rs.Fields("Cable Description") = Cells(i + 1, 16).Value
+    rs.Fields("Footage") = Cells(i + 1, 17).Value
+    rs.Fields("Samples #") = Cells(i + 1, 18).Value
+    rs.Fields("Sampling Rate  (% Relative to 3 samples/50,000 ft)") = Cells(i + 1, 19).Value
+    rs.Fields("Total Reels") = Cells(i + 1, 20).Value
+    rs.Fields("Tested By") = Cells(i + 1, 21).Value
+    rs.Fields("Measurements Verified by") = Cells(i + 1, 22).Value
+    rs.Fields("Reviewed By") = Cells(i + 1, 23).Value
+    rs.Fields("Correct Markings") = Cells(i + 1, 24).Value
+    rs.Fields("Jacket Defects") = Cells(i + 1, 25).Value
+    rs.Fields("Conductor OD Min") = Cells(i + 1, 26).Value
+    rs.Fields("Conductor OD Max") = Cells(i + 1, 27).Value
+    rs.Fields("Conductor OD Point 3") = Cells(i + 1, 28).Value
+    rs.Fields("Conductor OD Average") = Cells(i + 1, 29).Value
+    rs.Fields("Conductor OD Min Limit") = Cells(i + 1, 30).Value
+    rs.Fields("Conductor OD Max Limit") = Cells(i + 1, 31).Value
+    rs.Fields("Overall OD Min") = Cells(i + 1, 32).Value
+    rs.Fields("Overall OD Max") = Cells(i + 1, 33).Value
+    rs.Fields("Overall OD Point 3") = Cells(i + 1, 34).Value
+    rs.Fields("Overall OD Average") = Cells(i + 1, 35).Value
+    rs.Fields("Overall OD Min Limit") = Cells(i + 1, 36).Value
+    rs.Fields("Overall OD Max Limit") = Cells(i + 1, 37).Value
+    rs.Fields("Shield Cylindrical (Clause 5-1)") = Cells(i + 1, 38).Value
+    rs.Fields("Conductor Shield Thickness Min") = Cells(i + 1, 39).Value
+    rs.Fields("Conductor Shield Thickness Min Limit") = Cells(i + 1, 40).Value
+    rs.Fields("XLPE Min Thickness (Clause 6-2)") = Cells(i + 1, 41).Value
+    rs.Fields("XLPE Max Thickness") = Cells(i + 1, 42).Value
+    rs.Fields("XLPE Thickness Min Limit") = Cells(i + 1, 43).Value
+    rs.Fields("Ratio of Total Thickness") = Cells(i + 1, 44).Value
+    rs.Fields("Tracking Cover Min Thickness (Clause 6-2)") = Cells(i + 1, 45).Value
+    rs.Fields("Tracking Cover Max Thickness") = Cells(i + 1, 46).Value
+    rs.Fields("Tracking Thickness Min Limit") = Cells(i + 1, 47).Value
+    rs.Fields("XLPE + Tracking Min") = Cells(i + 1, 48).Value
+    rs.Fields("XLPE + Tracking Max") = Cells(i + 1, 49).Value
+    rs.Fields("XLPE + Tracking Min Limit") = Cells(i + 1, 50).Value
+    rs.Fields("Check w/ Layers Min") = Cells(i + 1, 51).Value
+    rs.Fields("Check w/ Layers Max") = Cells(i + 1, 52).Value
+    rs.Fields("Check w/ Layers Concentricity") = Cells(i + 1, 53).Value
+    rs.Fields("f1") = Cells(i + 1, 54).Value
+    rs.Fields("f2") = Cells(i + 1, 55).Value
+    rs.Fields("Check w/ Layers Tracking Eccentricity") = Cells(i + 1, 56).Value
+    rs.Fields("Covering Thickness Min Limit") = Cells(i + 1, 57).Value
+    rs.Fields("Tracking Eccentricity") = Cells(i + 1, 58).Value
+    rs.Fields("XLPE Concentricity") = Cells(i + 1, 59).Value
+    rs.Fields("Tracking Concentricity") = Cells(i + 1, 60).Value
+    rs.Fields("ICEA Covering Concentricity") = Cells(i + 1, 61).Value
+    rs.Fields("Retest Covering Concentricity - SW Method") = Cells(i + 1, 62).Value
+    rs.Fields("Dry Mass") = Cells(i + 1, 63).Value
+    rs.Fields("Apparent Mass") = Cells(i + 1, 64).Value
+    rs.Fields("Density") = Cells(i + 1, 65).Value
+    rs.Fields("Length (in)") = Cells(i + 1, 66).Value
+    rs.Fields("Mass (lbs)") = Cells(i + 1, 67).Value
+    rs.Fields("Mass (lbs) per 1000ft") = Cells(i + 1, 68).Value
+    rs.Fields("Tracking Covering Thickness(mm) A") = Cells(i + 1, 69).Value
+    rs.Fields("Tracking Covering Thickness(mm) B") = Cells(i + 1, 70).Value
+    rs.Fields("Tracking Covering Thickness(mm) C") = Cells(i + 1, 71).Value
+    rs.Fields("Stress Weight (g) A") = Cells(i + 1, 72).Value
+    rs.Fields("Stress Weight (g) B") = Cells(i + 1, 73).Value
+    rs.Fields("Stress Weight (g) C") = Cells(i + 1, 74).Value
+    rs.Fields("Tracking Layer Elongation % A") = Cells(i + 1, 75).Value
+    rs.Fields("Tracking Layer Elongation % B") = Cells(i + 1, 76).Value
+    rs.Fields("Tracking Layer Elongation % C") = Cells(i + 1, 77).Value
+    rs.Fields("Tracking Layer Elongation UMS Limit") = Cells(i + 1, 78).Value
+    rs.Fields("Tracking Layer Elongation DNMS Limit") = Cells(i + 1, 79).Value
+    rs.Fields("Tracking Set % A") = Cells(i + 1, 80).Value
+    rs.Fields("Tracking Set % B") = Cells(i + 1, 81).Value
+    rs.Fields("Tracking Set % C") = Cells(i + 1, 82).Value
+    rs.Fields("Tracking Elongation % Average") = Cells(i + 1, 83).Value
+    rs.Fields("Tracking Set % Average") = Cells(i + 1, 84).Value
+    rs.Fields("XLPE Covering Thickness(mm) A") = Cells(i + 1, 85).Value
+    rs.Fields("XLPE Covering Thickness(mm) B") = Cells(i + 1, 86).Value
+    rs.Fields("XLPE Covering Thickness(mm) C") = Cells(i + 1, 87).Value
+    rs.Fields("Stress Weight(g) A") = Cells(i + 1, 88).Value
+    rs.Fields("Stress Weight(g) B") = Cells(i + 1, 89).Value
+    rs.Fields("Stress Weight(g) C") = Cells(i + 1, 90).Value
+    rs.Fields("XLPE Layer Elongation % A") = Cells(i + 1, 91).Value
+    rs.Fields("XLPE Layer Elongation % B") = Cells(i + 1, 92).Value
+    rs.Fields("XLPE Layer Elongation % C") = Cells(i + 1, 93).Value
+    rs.Fields("XLPE Layer Elongation UMS Limit") = Cells(i + 1, 94).Value
+    rs.Fields("XLPE Layer Elongation DNMS Limit") = Cells(i + 1, 95).Value
+    rs.Fields("XLPE Set % A") = Cells(i + 1, 96).Value
+    rs.Fields("XLPE Set % B") = Cells(i + 1, 97).Value
+    rs.Fields("XLPE Set % C") = Cells(i + 1, 98).Value
+    rs.Fields("XLPE Elongation % Average") = Cells(i + 1, 99).Value
+    rs.Fields("XLPE Set % Average") = Cells(i + 1, 100).Value
+    rs.Fields("XLPE Contamination") = Cells(i + 1, 101).Value
+    rs.Fields("Tracking Contamination") = Cells(i + 1, 102).Value
+    rs.Fields("Semicon Circular") = Cells(i + 1, 103).Value
+    rs.Fields("Retest?") = Cells(i + 1, 104).Value
+    rs.Fields("Comments") = Cells(i + 1, 105).Value
+    rs.Update
+
 Next i
-oDB.Close
-If MsgBox("Open the table?", vbYesNo) = vbYes Then
-    Dim oApp As Access.Application
-    Set oApp = New Access.Application
-    oApp.Visible = True
-    oApp.OpenCurrentDatabase sPath
-    oApp.DoCmd.OpenTable "CoveredConductor", acViewNormal
-    oApp.DoCmd.GoToRecord , , acLast
-    DoEvents
-End If
+
+Call CloseConnection
+
+Application.ScreenUpdating = True
+Application.EnableAnimations = True
+Application.EnableEvents = True
+Application.DisplayAlerts = True
 
 End Sub
+Public Function MakeConnection(TableName As String) As Boolean
+'*********Routine to establish connection with database
+
+   Dim DBFullName As String
+   Dim cs As String
+
+   DBFullName = "C:\Users\achan\Desktop\GT\NEETRAC\CoveredConductorQA.accdb"
+
+   cs = "Provider=Microsoft.Jet.OLEDB.4.0; Data Source=" & DBFullName & ";"
+
+   Set cn = CreateObject("ADODB.Connection")
+
+   If Not (cn.State = adStateOpen) Then
+      cn.Open cs
+   End If
+
+   Set rs = CreateObject("ADODB.Recordset")
+
+   If Not (rs.State = adStateOpen) Then
+       rs.Open TableName, cn, adOpenKeyset, adLockOptimistic
+   End If
+
+End Function
+Public Function CloseConnection() As Boolean
+'*********Routine to close connection with database
+
+On Error Resume Next
+   If Not rs Is Nothing Then
+       rs.Close
+   End If
+
+
+   If Not cn Is Nothing Then
+       cn.Close
+   End If
+   CloseConnection = True
+   Exit Function
+
+End Function
+
 
 
 Sub AutoReport()
